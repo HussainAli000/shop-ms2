@@ -17,6 +17,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_product'])) {
     $id = (int)$_POST['id'];
     $name = trim($_POST['name'] ?? '');
     $description = trim($_POST['description'] ?? '');
+    $minidesc = trim($_POST['minidesc'] ?? '');
     $price = (float)($_POST['price'] ?? 0);
     $stock = (int)($_POST['stock'] ?? 0);
 
@@ -27,8 +28,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_product'])) {
         move_uploaded_file($_FILES['img']['tmp_name'], '../images/' . $newImage);
     }
 
-    $stmt = $conn->prepare('UPDATE products SET name = ?, description = ?, price = ?, stock = ?, image = ? WHERE id = ?');
-    $stmt->bind_param('ssdisi', $name, $description, $price, $stock, $newImage, $id);
+    $stmt = $conn->prepare('UPDATE products SET name = ?, description = ?, price = ?, stock = ?, image = ?, minidesc = ? WHERE id = ?');
+    $stmt->bind_param('ssdissi', $name, $description, $price, $stock, $newImage, $minidesc, $id);
     $stmt->execute();
     header('Location: admin_edit.php?id=' . $id . '&updated=1');
     exit;
@@ -59,6 +60,9 @@ renderHeader($conn, 'Search and Modify Product');
 
         <label for="description">Description</label>
         <textarea id="description" name="description" rows="4"><?= htmlspecialchars($product['description'] ?? '') ?></textarea>
+
+        <label for="minidesc">Summary Description</label>
+        <textarea id="minidesc" name="minidesc" rows="4"><?= htmlspecialchars($product['minidesc'] ?? '') ?></textarea>
 
         <label for="price">Price</label>
         <input id="price" name="price" type="number" step="0.01" min="0.01" value="<?= htmlspecialchars($product['price']) ?>" required>
